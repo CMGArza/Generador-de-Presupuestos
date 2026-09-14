@@ -4,8 +4,8 @@
     --ink:#292321;
     --plum:#641F2A;
     --plum-dark:#40141B;
-    --gold:#641F2A;
-    --gold-soft:#641F2A;
+    --gold:#9C6B2E;
+    --gold-soft:#EFDFC2;
     --line:#641F2A;
     --muted:#8A8296;
     --danger:#A6483B;
@@ -508,9 +508,43 @@
   @media (max-width:520px){
     .type-grid{grid-template-columns:1fr;}
     .grid-2, .grid-3{grid-template-columns:1fr;}
-    .service-row, .col-label{grid-template-columns:20px 1fr 1fr; }
+
+    /* Filas de servicio: se acomodan en dos líneas en vez de superponerse */
+    .service-row{
+      grid-template-columns:24px 1fr 1fr;
+      grid-template-areas:
+        "chk  name  name"
+        "..   price qty";
+      row-gap:6px;
+    }
+    .service-row [data-role="service-check"]{grid-area:chk;}
+    .service-row .name{grid-area:name;}
+    .service-row [data-role="service-price"]{grid-area:price;}
+    .service-row [data-role="service-qty"]{grid-area:qty;}
+
+    .col-label{grid-template-columns:24px 1fr 1fr;}
     .col-label span:nth-child(2){display:none;}
-    .service-row .name{grid-column:1/2; }
+
+    /* Conceptos adicionales: también se acomodan en dos líneas */
+    .extra-row{
+      grid-template-columns:1fr 28px;
+      grid-template-areas:
+        "name   remove"
+        "price  remove";
+      row-gap:6px;
+    }
+    .extra-row [data-role="extra-name"]{grid-area:name;}
+    .extra-row [data-role="extra-price"]{grid-area:price;}
+    .extra-row .remove-btn{grid-area:remove; align-self:center;}
+
+    /* Documento de vista previa: menos padding y columnas más angostas para que no se corte nada */
+    .doc-header{padding:18px 16px;}
+    .doc-header .top-row{flex-wrap:wrap; gap:10px;}
+    .doc-header .doc-meta{text-align:left;}
+    .doc-body{padding:18px 16px 20px;}
+    .ticket-meta{grid-template-columns:1fr;}
+    .items-head, .item-row{grid-template-columns:1fr 26px 56px 56px; gap:5px;}
+    .item-row{font-size:12px;}
   }
 
   /* ---------- Print ---------- */
