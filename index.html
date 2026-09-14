@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de presupuestos para eventos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="brandbar">
+    <div class="brandbar-inner">
+      <input id="bizName" class="brand-input" placeholder="Nombre de tu empresa" value="Mi Empresa de Eventos">
+      <input id="bizTagline" class="brand-tagline-input" placeholder="Eslogan (opcional, ej: La máxima experiencia al mejor precio)">
+      <span class="brand-sub">Generador de presupuestos</span>
+    </div>
+  </div>
+
+  <div class="layout" id="layout">
+
+    <!-- ===================== FORM ===================== -->
+    <div class="form-panel">
+
+      <div class="section is-active">
+        <h2 class="section-title">Tipo de evento</h2>
+        <p class="section-hint">Elegí la categoría que mejor describe el evento.</p>
+        <div class="type-grid" id="typeGrid"></div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Imagen de portada</h2>
+        <p class="section-hint">Opcional. Se muestra como banner arriba del membrete, ideal para una foto de decoración o temática del evento.</p>
+        <div class="cover-upload" id="coverUpload">
+          <label class="cover-drop" id="coverDrop" for="coverInput">
+            <span id="coverDropText">+ Subir imagen</span>
+          </label>
+          <input type="file" id="coverInput" accept="image/*" hidden>
+          <button type="button" class="remove-cover-btn" id="removeCoverBtn" style="display:none;">Quitar imagen</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Datos del cliente y del evento</h2>
+        <p class="section-hint">Información básica para identificar el presupuesto.</p>
+        <div class="grid-2">
+          <div class="field"><label for="clientName">Nombre del cliente</label><input id="clientName" type="text" placeholder="Ej: María González"></div>
+          <div class="field"><label for="clientPhone">Teléfono</label><input id="clientPhone" type="tel" placeholder="Ej: 0981 234 567"></div>
+          <div class="field"><label for="clientEmail">Correo electrónico</label><input id="clientEmail" type="email" placeholder="Ej: maria@correo.com"></div>
+          <div class="field"><label for="guestCount">Cantidad de invitados</label><input id="guestCount" type="number" min="0" placeholder="Ej: 80"></div>
+          <div class="field"><label for="eventDate">Fecha del evento</label><input id="eventDate" type="date"></div>
+          <div class="field"><label for="eventPlace">Lugar / salón</label><input id="eventPlace" type="text" placeholder="Ej: Salón Jardín Real"></div>
+          <div class="field"><label for="validUntil">Presupuesto válido hasta</label><input id="validUntil" type="date"></div>
+          <div class="field">
+            <label>Moneda</label>
+            <div class="currency-toggle" id="currencyToggle">
+              <button type="button" data-cur="PYG" class="active">Gs.</button>
+              <button type="button" data-cur="USD">US$</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Paquetes y servicios</h2>
+        <p class="section-hint">Marcá lo que incluye el presupuesto y ajustá precio y cantidad de cada servicio.</p>
+        <div class="col-label"><span></span><span>Servicio</span><span>Precio</span><span>Cant.</span></div>
+        <div id="servicesList"></div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Conceptos adicionales</h2>
+        <p class="section-hint">Sumá ítems que no están en la lista anterior (transporte, seguridad, alquiler de mobiliario, etc.).</p>
+        <div id="extrasList"></div>
+        <button type="button" class="add-btn" id="addExtraBtn">+ Agregar concepto</button>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Descuento y seña</h2>
+        <p class="section-hint">Opcional. El total se ajusta automáticamente.</p>
+        <div class="grid-3">
+          <div class="field"><label for="discountPct">Descuento (%)</label><input id="discountPct" type="number" min="0" max="100" value="0"></div>
+          <div class="field"><label for="depositPct">Seña sugerida (%)</label><input id="depositPct" type="number" min="0" max="100" value="30"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">Observaciones</h2>
+        <p class="section-hint">Condiciones, formas de pago, aclaraciones para el cliente.</p>
+        <textarea id="observations" placeholder="Ej: El presupuesto no incluye IVA. Seña no reembolsable. Precio sujeto a confirmación de fecha."></textarea>
+      </div>
+
+    </div>
+
+    <!-- ===================== PREVIEW ===================== -->
+    <div class="preview-col">
+      <div class="document" id="ticket">
+
+        <div class="doc-banner" id="pvBanner" style="display:none;">
+          <img id="pvBannerImg" alt="Imagen de portada">
+        </div>
+
+        <div class="doc-header">
+          <div class="top-row">
+            <div>
+              <div class="biz" id="pvBiz">Mi Empresa de Eventos</div>
+              <div class="tagline" id="pvTagline"></div>
+            </div>
+            <div class="doc-meta">
+              <div class="doc-title">Presupuesto</div>
+              <div class="doc-num" id="pvQuoteNo"></div>
+              <div class="doc-date" id="pvIssued"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="doc-body">
+          <div class="event-type-badge" id="pvType">Presupuesto de evento</div>
+
+          <div class="ticket-meta-box">
+            <div class="ticket-meta" id="pvMeta"></div>
+          </div>
+
+          <div class="items-head">
+            <span>Concepto</span><span>Cant.</span><span>P. unit.</span><span>Subtotal</span>
+          </div>
+          <div id="pvItems"></div>
+
+          <div class="totals-box">
+            <div class="trow"><span>Subtotal</span><span id="pvSubtotal">—</span></div>
+            <div class="trow discount" id="pvDiscountRow"><span>Descuento</span><span id="pvDiscount">—</span></div>
+            <div class="trow total"><span>Total</span><span id="pvTotal">—</span></div>
+            <div class="trow deposit" id="pvDepositRow"><span>Seña sugerida</span><span id="pvDeposit">—</span></div>
+          </div>
+
+          <div class="ticket-obs" id="pvObsBlock" style="display:none;">
+            <span class="k">Observaciones</span>
+            <span id="pvObs"></span>
+          </div>
+
+          <div class="ticket-signatures">
+            <div class="sig-line">Firma y aclaración — Cliente</div>
+            <div class="sig-line" id="pvSigBiz">Firma y aclaración — Mi Empresa de Eventos</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="print-btn" id="printBtn">Imprimir o guardar como PDF</button>
+    </div>
+
+  </div>
+
+  <div class="mobile-bar">
+    <div class="amt"><small>Total</small><span id="mobTotal">—</span></div>
+    <button id="mobPrintBtn">Imprimir</button>
+  </div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
